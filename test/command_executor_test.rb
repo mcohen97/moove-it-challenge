@@ -1,14 +1,13 @@
 require "test/unit"
 require_relative '../lib/command_executor.rb'
-require_relative '../lib/cache_implementation.rb'
+require_relative '../lib/cache_imp.rb'
  
 class CommandExecutorTest < Test::Unit::TestCase
  
   def setup
-    @cache = CacheImplementation.new
+    @cache = CacheImp.new
     @executor = CommandExecutor.new(@cache)
   end
-
   # using set as the example to test storage commands
   def test_correct_set_command
     command = 'set key 0 0 4'
@@ -60,8 +59,6 @@ class CommandExecutorTest < Test::Unit::TestCase
     assert_false result.success
     assert_equal 'Invalid number of arguments', result.error_message
   end
-
-
 
   def test_unknown_command
     command = 'unknown 22'

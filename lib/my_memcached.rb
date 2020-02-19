@@ -1,10 +1,10 @@
-require_relative 'cache_implementation.rb'
+require_relative 'cache_imp.rb'
 require_relative 'server.rb'
 
 class MyMemcached
 
   def initialize(args)
-    @cache = CacheImplementation.new()
+    @cache = CacheImp.new()
     @server = Server.new(@cache, args[:port])
   end
   
