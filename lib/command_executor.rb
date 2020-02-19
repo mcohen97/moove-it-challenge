@@ -69,7 +69,7 @@ private
   end
 
   def valid_key?(key)
-    return key.length <= 250 && !(key =~ /[^[:print:]]/)
+    return key.length <= 250 && (key =~ /[^[:print:]]/).nil?
   end
 
   def valid_flags?(flags)
