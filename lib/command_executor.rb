@@ -11,7 +11,7 @@ class CommandExecutor
   end
 
   def split_arguments(line)
-    tokens = line.split(' ')
+    tokens = line.split("\s")
     command = tokens[0]
     
     if is_storage?(command)
@@ -34,30 +34,63 @@ private
   end
 
   def generate_storage_args(tokens)
-    if tokens.length > 6 || tokens.length < 5
+
+    if !valid_args_count?(tokens)
       return CommandParsingResult.new(nil, true, 'Invalid number of arguments')
     end
+    
     key = tokens[1]
+    flags = tokens[2]
+    exp_time = tokens[3]
+    bytes = tokens[4]
+      
     if !valid_key?(key)
       return CommandParsingResult.new(nil, true, 'Key is not valid')
-    end
-    flags = tokens[2]
-    if !valid_flags?(flags)
+    elsif !valid_flags?(flags)
       return CommandParsingResult.new(nil, true, 'Flags are not valid')
-    end
-    exp_time = tokens[3]
-    if !valid_time?(exp_time)
+    elsif !valid_time?(exp_time)
       return CommandParsingResult.new(nil, true, 'Expiration time is not valid')
-    end
-    bytes = tokens[4]
-    if !valid_bytes?(bytes)
+    elsif !valid_bytes?(bytes)
       return CommandParsingResult.new(nil, true, 'Bytes specified are not valid')
+    elsif is_cas?(tokens[0]) && !valid_cas_unique?(tokens)
+      return CommandParsingResult.new(nil, true, 'Cas value is not valid')
     end
 
-    noreply = tokens.length == 6 && tokens[5] == 'noreply'? true : false
+    noreply = contains_no_reply?(tokens)
     
-    args = {command: tokens[0], key: key, exp_time: parse_exp_time(exp_time), bytes: Integer(bytes), noreply: noreply}
+    args = {command: tokens[0], key: key, flags: flags, exp_time: parse_exp_time(exp_time), bytes: Integer(bytes), noreply: noreply}
+
+    if is_cas?(tokens[0])
+      args[:cas_unique] = Integer(tokens[5])
+    end
+
     return CommandParsingResult.new(args, false, nil)
+  end
+
+  def valid_args_count?(tokens)
+    if tokens[0] == 'cas'
+      valid = 6 <= tokens.length && tokens.length <= 7
+    else 
+      #cas command has different args, so it has to be evaluated separately
+      valid = 5 <= tokens.length && tokens.length <= 6 
+    end
+    return valid
+  end
+
+  def is_cas?(command)
+    return command == 'cas'
+  end
+
+  def valid_cas_unique?(tokens)
+    return is_unsigned_int(tokens[5])
+  end
+
+  def contains_no_reply?(tokens)
+    if tokens[0] == 'cas'
+      return tokens.length == 7 && tokens[6] == 'noreply'
+    else
+      return tokens.length == 6 && tokens[5] == 'noreply'
+    end
   end
 
   def generate_retrieval_args(tokens)
