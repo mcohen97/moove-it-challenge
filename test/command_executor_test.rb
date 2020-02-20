@@ -27,8 +27,16 @@ class CommandExecutorTest < Test::Unit::TestCase
     assert_true result.command_args[:noreply]
   end
 
-  def test_set_invalid_args_count
+  def test_set_too_many_args
     command = 'set key 0 0 4 55 23'
+    result = @executor.split_arguments(command)
+    
+    assert_false result.success
+    assert_equal 'Invalid number of arguments', result.error_message
+  end
+
+  def test_set_too_few_args
+    command = 'set key 0 0'
     result = @executor.split_arguments(command)
     
     assert_false result.success
@@ -155,6 +163,23 @@ class CommandExecutorTest < Test::Unit::TestCase
     
     assert_true result.success
     assert_false result.command_args[:noreply]
+  end
+
+  def test_correct_get_command
+    command = 'get key1 key2'
+    result = @executor.split_arguments(command)
+
+    assert_true result.success
+    assert_equal 2, result.command_args.length
+    assert_equal 2, result.command_args[:keys].length
+  end
+
+  def test_get_invalid_args_count
+    command = 'get'
+    result = @executor.split_arguments(command)
+
+    assert_false result.success
+    assert_equal 'Invalid number of arguments', result.error_message
   end
 
 end

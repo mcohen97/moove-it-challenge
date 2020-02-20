@@ -23,11 +23,19 @@ class CommandExecutor
     end
   end
 
-private
+  def execute_storage(command, data)
 
+  end
+
+  def execute_retrieval(command)
+  end
+  
   def is_storage?(command)
     return STORAGE_COMMANDS.include?(command)
   end
+
+
+private
 
   def is_retrieval?(command)
     return RETRIEVAL_COMMANDS.include?(command)
@@ -98,7 +106,7 @@ private
       return CommandParsingResult.new(nil, true, 'Invalid number of arguments')
     end
     args = {command: tokens[0], keys: tokens.drop(1)}
-    return CommandParsingResult.new(args, false)
+    return CommandParsingResult.new(args, false, nil)
   end
 
   def valid_key?(key)
