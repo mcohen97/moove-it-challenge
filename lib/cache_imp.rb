@@ -11,7 +11,7 @@ class CacheImp
 
   def set(key, data, flags, exp_time)
     cas_unique = next_cas_val()
-    entry = CacheEntry.new(data,flags, exp_time, cas_unique)
+    entry = CacheEntry.new(key:key, data:data, flags: flags, exp_time: exp_time, cas_unique: cas_unique)
     @hash_storage[key] = entry
     return CacheStorageResult.new(success: true, message: 'STORED', entry: entry)
   end
@@ -53,7 +53,7 @@ class CacheImp
   def cas(key, data, flags, exp_time, cas_unique)
     if !@hash_storage.key?(key)
       return CacheStorageResult.new(success: false, message: 'NOT_FOUND')
-    elsif @hash_storage[key][:cas_unique] != cas_unique
+    elsif @hash_storage[key].cas_unique != cas_unique
       return CacheStorageResult.new(success: false, message: 'EXISTS')
     else
        set(key, data, flags, exp_time)
@@ -64,10 +64,7 @@ class CacheImp
     result = CacheRetrievalResult.new(success: true, entries: [])
     
     keys.each do |k|
-      val = @hash_storage[k]
-      if !val.nil?
-        result.entries << KeyValue.new(key: k, value: val)
-      end
+      add_entry_if_valid(result.entries, k)
     end
 
     return result
@@ -80,4 +77,22 @@ private
     @cas_current = @cas_current + 1
     return val
   end
+
+  def add_entry_if_valid(list, key)
+    val = @hash_storage[key]
+    if !val.nil? && !expired?(val)
+      list << val
+    elsif !val.nil? && expired?(val)
+      remove_entry(key)
+    end
+  end
+
+  def expired?(entry)
+    return entry.exp_date <= Time.now
+  end
+
+  def remove_entry(key)
+    @hash_storage.delete(key)
+  end
 end
+

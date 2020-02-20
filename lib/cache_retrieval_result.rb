@@ -8,14 +8,3 @@ class CacheRetrievalResult
   end
 
 end
-
-class KeyValue
-
-  attr_reader :key, :value
-
-  def initialize(args)
-    @key = args[:key]
-    @value = args[:value]
-  end
-
-end
