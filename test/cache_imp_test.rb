@@ -59,7 +59,7 @@ class CommandExecutorTest < Test::Unit::TestCase
     assert_false result.entries.any?
   end
 
-  def test_get_multiple
+  def test_get_multiple_keys
     @cache.add('Key1','Data1', 0, 60)
     @cache.add('Key2','Data2', 0, 60)
     @cache.add('Key3','Data3', 0, 60)
@@ -79,9 +79,16 @@ class CommandExecutorTest < Test::Unit::TestCase
     assert_equal 1, result.entries.length
   end
 
-  def test_get_expired_keys
-    @cache.add('Key1','Data1', 0, 0)
-    sleep(1)
+  def test_get_expired_key_negative
+    @cache.add('Key1','Data1', 0, -1)
+    result = @cache.get(['Key1'])
+
+    assert_false result.entries.any?
+  end
+
+  def test_get_expired_key
+    @cache.add('Key1','Data1', 0, 1)
+    sleep(2)
     result = @cache.get(['Key1'])
 
     assert_false result.entries.any?

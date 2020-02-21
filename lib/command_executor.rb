@@ -10,8 +10,8 @@ class CommandExecutor
     @cache = cache_storage
   end
 
-  def split_arguments(line)
-    tokens = line.split("\s")
+  def split_arguments(command_line)
+    tokens = command_line.split("\s")
     command = tokens[0]
     
     if is_storage?(command)
@@ -23,17 +23,47 @@ class CommandExecutor
     end
   end
 
-  def execute_storage(command, data)
+  def execute_storage(command_args, data)
+    command = command_args[:command]
 
+    case command
+    when 'set'
+      result = @cache.set(command_args[:key], data, command_args[:flags], command_args[:exp_time])
+    when 'add'
+      result = @cache.add(command_args[:key], data, command_args[:flags], command_args[:exp_time])
+    when 'replace'
+      result = @cache.replace(command_args[:key], data, command_args[:flags], command_args[:exp_time])
+    when 'append'
+      result = @cache.append(command_args[:key], data, command_args[:flags], command_args[:exp_time])
+    when 'prepend'
+      result = @cache.prepend(command_args[:key], data, command_args[:flags], command_args[:exp_time])
+    when 'cas'
+      result = @cache.cas(command_args[:key], data, command_args[:flags], command_args[:exp_time], command_args[:cas_unique])
+    else
+      return 'Invalid command'
+    end
+
+    return result.message
   end
 
-  def execute_retrieval(command)
+  def execute_retrieval(command_args)
+    cas_required = command_args[:command] == 'gets'
+    entries = @cache.get(command_args[:keys]).entries
+
+    result = StringIO.new
+    entries.each do |e|
+      result << "VALUE #{e.key} #{e.flags} #{e.data.length}"
+      result << " #{e.cas_unique}" if cas_required
+      result << "\n#{e.data}\n"
+    end
+    result << 'END'
+
+    return result.string
   end
   
   def is_storage?(command)
     return STORAGE_COMMANDS.include?(command)
   end
-
 
 private
 

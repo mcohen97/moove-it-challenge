@@ -182,4 +182,165 @@ class CommandExecutorTest < Test::Unit::TestCase
     assert_equal 'Invalid number of arguments', result.error_message
   end
 
+  def test_execute_set_correctly
+    command = 'set key 0 0 4'
+    parsed_result = @executor.split_arguments(command)
+    
+    message = @executor.execute_storage(parsed_result.command_args, 'Data')
+
+    assert_equal 'STORED', message
+  end
+
+  def test_execute_add_correctly
+    command = 'add key 0 0 4'
+    parsed_result = @executor.split_arguments(command)
+    
+    message = @executor.execute_storage(parsed_result.command_args, 'Data')
+
+    assert_equal 'STORED', message
+  end
+
+  def test_execute_add_already_existing
+    @cache.set('Key','Data1', 0, 0)
+
+    command = 'add Key 0 0 4'
+    parsed_result = @executor.split_arguments(command)
+    message = @executor.execute_storage(parsed_result.command_args, 'Data')
+
+    assert_equal 'NOT_STORED', message
+  end
+
+  def test_execute_replace_correctly
+    @cache.set('Key1','Data1', 0, 0)
+
+    command = 'replace Key1 0 0 4'
+    parsed_result = @executor.split_arguments(command)
+    message = @executor.execute_storage(parsed_result.command_args, 'Data2')
+
+    assert_equal 'STORED', message
+  end
+
+  def test_execute_replace_non_existing
+    command = 'replace key 0 0 4'
+    parsed_result = @executor.split_arguments(command)
+    message = @executor.execute_storage(parsed_result.command_args, 'Data2')
+
+    assert_equal 'NOT_STORED', message
+  end
+
+  def test_execute_append_correctly
+    @cache.set('Key1','Data1', 0, 0)
+
+    command = 'append Key1 0 0 4'
+    parsed_result = @executor.split_arguments(command)
+    message = @executor.execute_storage(parsed_result.command_args, 'Data2')
+
+    assert_equal 'STORED', message
+  end
+
+  def test_execute_append_to_non_existing
+    command = 'append key 0 0 4'
+    parsed_result = @executor.split_arguments(command)
+    message = @executor.execute_storage(parsed_result.command_args, 'Data2')
+
+    assert_equal 'NOT_STORED', message
+  end
+
+  def test_execute_prepend_correctly
+    @cache.set('Key1','Data1', 0, 0)
+
+    command = 'prepend Key1 0 0 4'
+    parsed_result = @executor.split_arguments(command)
+    message = @executor.execute_storage(parsed_result.command_args, 'Data2')
+
+    assert_equal 'STORED', message
+  end
+
+  def test_execute_prepend_to_non_existing
+    command = 'prepend key 0 0 4'
+    parsed_result = @executor.split_arguments(command)
+    message = @executor.execute_storage(parsed_result.command_args, 'Data2')
+
+    assert_equal 'NOT_STORED', message
+  end
+
+  def test_execute_cas_non_updated
+    result = @cache.set('Key1','Data1', 0, 0)
+    cas = result.entry.cas_unique
+
+    command = "cas Key1 0 0 4 #{cas}" #2^32 is known to be the first cas unique generated
+    parsed_result = @executor.split_arguments(command)
+    message = @executor.execute_storage(parsed_result.command_args, 'Data2')
+
+    assert_equal 'STORED', message
+  end
+
+  def test_execute_cas_already_updated
+    result = @cache.set('Key1','Data1', 0, 0)
+    old_cas = result.entry.cas_unique
+    @cache.set('Key1','Data1', 0, 0)
+
+
+    command = "cas Key1 0 0 4 #{old_cas}" # current cas is 1 more, since it's been updated
+    parsed_result = @executor.split_arguments(command)
+    message = @executor.execute_storage(parsed_result.command_args, 'Data2')
+
+    assert_equal 'EXISTS', message
+  end
+
+  def test_execute_cas_non_existing
+    command = "cas key 0 0 4 15" 
+    parsed_result = @executor.split_arguments(command)
+    message = @executor.execute_storage(parsed_result.command_args, 'Data2')
+
+    assert_equal 'NOT_FOUND', message
+  end
+
+  def test_get_multiple
+    @cache.set('Key1','Data1', 0, 0)
+    @cache.set('Key2','Data2', 0, 0)
+
+    command = 'get Key1 Key2'
+    parsed_result = @executor.split_arguments(command)
+    message = @executor.execute_retrieval(parsed_result.command_args)
+    expected_message = "VALUE Key1 0 5\nData1\nVALUE Key2 0 5\nData2\nEND"
+
+    assert_equal expected_message, message
+  end
+
+  def test_get_empty
+    command = 'get Key1 Key2'
+    parsed_result = @executor.split_arguments(command)
+    message = @executor.execute_retrieval(parsed_result.command_args)
+    expected_message = "END"
+
+    assert_equal expected_message, message
+  end
+
+  def test_gets_multiple
+    result1 = @cache.set('Key1','Data1', 0, 0)
+    cas1 = result1.entry.cas_unique
+    result2 = @cache.set('Key2','Data2', 0, 0)
+    cas2 = result2.entry.cas_unique
+
+    command = 'gets Key1 Key2'
+    parsed_result = @executor.split_arguments(command)
+    message = @executor.execute_retrieval(parsed_result.command_args)
+    expected_message = "VALUE Key1 0 5 #{cas1}\nData1\nVALUE Key2 0 5 #{cas2}\nData2\nEND"
+
+    assert_equal expected_message, message
+  end
+
+  def test_get_expired
+    @cache.set('Key1','Data1', 0, -1)
+    @cache.set('Key2','Data2', 0, 1)
+
+    sleep(2)
+
+    command = 'get Key1 Key2'
+    parsed_result = @executor.split_arguments(command)
+    message = @executor.execute_retrieval(parsed_result.command_args)
+    expected_message = "END"
+  end
+
 end
