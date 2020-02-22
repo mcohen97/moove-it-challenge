@@ -52,6 +52,7 @@ class CommandExecutor
 
     result = StringIO.new
     entries.each do |e|
+      puts e.inspect
       result << "VALUE #{e.key} #{e.flags} #{e.data.length}"
       result << " #{e.cas_unique}" if cas_required
       result << "\n#{e.data}\n"

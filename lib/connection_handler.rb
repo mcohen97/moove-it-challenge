@@ -21,6 +21,9 @@ private
 
   def process_line(socket, line)
     parsed_command = @executor.split_arguments(line)
+    if !parsed_command.success
+      return parsed_command.error_message
+    end
     command_args = parsed_command.command_args
     if @executor.is_storage?(command_args[:command])
       puts 'Storage command, we need to fetch data'
@@ -33,8 +36,9 @@ private
 
   def get_data(socket, length)
     puts length
-    data =  socket.recv(length + 2)
+    data =  socket.recv(length+1)
+    puts data
     puts 'DATA RECEIVED'
-    return data
+    return data[0 .. -2] # remove last control characters \r\n
   end
 end

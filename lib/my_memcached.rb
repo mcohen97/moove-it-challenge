@@ -14,6 +14,6 @@ class MyMemcached
 
 end
 
-my_cache = MyMemcached.new(port: 5000)
+my_cache = MyMemcached.new(port: 5001)
 my_cache.run()
 
