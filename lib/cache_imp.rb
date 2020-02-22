@@ -7,7 +7,7 @@ class CacheImp
   PURGING_INTERVAL_SECS = 5
 
   def initialize
-    @hash_storage = {}
+    @hash_storage = Concurrent::Hash.new({})
     @cas_current = 2**32
     @purging = false
   end

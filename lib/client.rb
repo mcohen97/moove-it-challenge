@@ -20,7 +20,7 @@ puts prompt_message
 
 message = gets
 while message != 'X'
-  streamSock.puts(message)
+  streamSock.print(message)
   if message.start_with?('get')
     server_message = get_multi_line(streamSock)
   else  
