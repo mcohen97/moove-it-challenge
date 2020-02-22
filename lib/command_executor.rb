@@ -5,6 +5,9 @@ class CommandExecutor
   STORAGE_COMMANDS = %w[set add replace append prepend cas]
   RETRIEVAL_COMMANDS = %w[get gets]
 
+  CLIENT_ERROR = 'CLIENT_ERROR'
+  NON_EXISTENT_COMMAND_NAME = 'ERROR'
+
 
   def initialize(cache_storage)
     @cache = cache_storage
@@ -19,7 +22,7 @@ class CommandExecutor
     elsif is_retrieval?(command)
       return generate_retrieval_args(tokens)
     else
-      return CommandParsingResult.new(nil, true, 'Invalid command')
+      return CommandParsingResult.new(nil, true, "#{NON_EXISTENT_COMMAND_NAME} Invalid command.")
     end
   end
 
@@ -40,7 +43,7 @@ class CommandExecutor
     when 'cas'
       result = @cache.cas(command_args[:key], data, command_args[:flags], command_args[:exp_time], command_args[:cas_unique])
     else
-      return 'Invalid command'
+      return "#{NON_EXISTENT_COMMAND_NAME} Invalid command."
     end
 
     return result.message
@@ -52,7 +55,6 @@ class CommandExecutor
 
     result = StringIO.new
     entries.each do |e|
-      puts e.inspect
       result << "VALUE #{e.key} #{e.flags} #{e.data.length}"
       result << " #{e.cas_unique}" if cas_required
       result << "\n#{e.data}\n"
@@ -75,7 +77,7 @@ private
   def generate_storage_args(tokens)
 
     if !valid_args_count?(tokens)
-      return CommandParsingResult.new(nil, true, 'Invalid number of arguments')
+      return CommandParsingResult.new(nil, true, "#{CLIENT_ERROR} Invalid number of arguments.")
     end
     
     key = tokens[1]
@@ -84,15 +86,15 @@ private
     bytes = tokens[4]
       
     if !valid_key?(key)
-      return CommandParsingResult.new(nil, true, 'Key is not valid')
+      return CommandParsingResult.new(nil, true, "#{CLIENT_ERROR} Key is not valid.")
     elsif !valid_flags?(flags)
-      return CommandParsingResult.new(nil, true, 'Flags are not valid')
+      return CommandParsingResult.new(nil, true, "#{CLIENT_ERROR} Flags are not valid.")
     elsif !valid_time?(exp_time)
-      return CommandParsingResult.new(nil, true, 'Expiration time is not valid')
+      return CommandParsingResult.new(nil, true, "#{CLIENT_ERROR} Expiration time is not valid.")
     elsif !valid_bytes?(bytes)
-      return CommandParsingResult.new(nil, true, 'Bytes specified are not valid')
+      return CommandParsingResult.new(nil, true, "#{CLIENT_ERROR} Bytes specified are not valid.")
     elsif is_cas?(tokens[0]) && !valid_cas_unique?(tokens)
-      return CommandParsingResult.new(nil, true, 'Cas value is not valid')
+      return CommandParsingResult.new(nil, true, "#{CLIENT_ERROR} Cas value is not valid.")
     end
 
     noreply = contains_no_reply?(tokens)
@@ -134,7 +136,7 @@ private
 
   def generate_retrieval_args(tokens)
     if tokens.length < 2
-      return CommandParsingResult.new(nil, true, 'Invalid number of arguments')
+      return CommandParsingResult.new(nil, true, "#{CLIENT_ERROR} Invalid number of arguments.")
     end
     args = {command: tokens[0], keys: tokens.drop(1)}
     return CommandParsingResult.new(args, false, nil)

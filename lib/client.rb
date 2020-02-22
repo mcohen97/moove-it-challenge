@@ -4,7 +4,7 @@ def get_multi_line(socket)
   total_message = StringIO.new
   partial_message = socket.gets
   
-  while !partial_message.start_with?("END")
+  while !partial_message.start_with?("END") && !partial_message.start_with?("ERROR") && !partial_message.start_with?("CLIENT_ERROR")
     total_message << partial_message
     partial_message = socket.gets
   end

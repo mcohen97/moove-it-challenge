@@ -32,7 +32,7 @@ class CommandExecutorTest < Test::Unit::TestCase
     result = @executor.split_arguments(command)
     
     assert_false result.success
-    assert_equal 'Invalid number of arguments', result.error_message
+    assert_equal 'CLIENT_ERROR Invalid number of arguments.', result.error_message
   end
 
   def test_set_too_few_args
@@ -40,7 +40,7 @@ class CommandExecutorTest < Test::Unit::TestCase
     result = @executor.split_arguments(command)
     
     assert_false result.success
-    assert_equal 'Invalid number of arguments', result.error_message
+    assert_equal 'CLIENT_ERROR Invalid number of arguments.', result.error_message
   end
 
   def test_correct_cas_command
@@ -65,7 +65,7 @@ class CommandExecutorTest < Test::Unit::TestCase
     result = @executor.split_arguments(command)
     
     assert_false result.success
-    assert_equal 'Invalid number of arguments', result.error_message
+    assert_equal 'CLIENT_ERROR Invalid number of arguments.', result.error_message
   end
 
   def test_unknown_command
@@ -73,7 +73,7 @@ class CommandExecutorTest < Test::Unit::TestCase
     result = @executor.split_arguments(command)
 
     assert_false result.success
-    assert_equal 'Invalid command', result.error_message
+    assert_equal 'ERROR Invalid command.', result.error_message
   end
 
   def test_too_long_key
@@ -82,7 +82,7 @@ class CommandExecutorTest < Test::Unit::TestCase
     result = @executor.split_arguments(command)
 
     assert_false result.success
-    assert_equal 'Key is not valid', result.error_message
+    assert_equal 'CLIENT_ERROR Key is not valid.', result.error_message
   end
 
   def test_key_with_control_characters
@@ -90,7 +90,7 @@ class CommandExecutorTest < Test::Unit::TestCase
     result = @executor.split_arguments(command)
     
     assert_false result.success
-    assert_equal 'Key is not valid', result.error_message
+    assert_equal 'CLIENT_ERROR Key is not valid.', result.error_message
   end
 
   def test_non_numerical_flags
@@ -98,7 +98,7 @@ class CommandExecutorTest < Test::Unit::TestCase
     result = @executor.split_arguments(command)
 
     assert_false result.success
-    assert_equal 'Flags are not valid', result.error_message
+    assert_equal 'CLIENT_ERROR Flags are not valid.', result.error_message
   end
 
   def test_negative_flags
@@ -106,7 +106,7 @@ class CommandExecutorTest < Test::Unit::TestCase
     result = @executor.split_arguments(command)
 
     assert_false result.success
-    assert_equal 'Flags are not valid', result.error_message
+    assert_equal 'CLIENT_ERROR Flags are not valid.', result.error_message
   end
 
   def test_non_numerical_exp_time
@@ -114,7 +114,7 @@ class CommandExecutorTest < Test::Unit::TestCase
     result = @executor.split_arguments(command)
 
     assert_false result.success
-    assert_equal 'Expiration time is not valid', result.error_message
+    assert_equal 'CLIENT_ERROR Expiration time is not valid.', result.error_message
   end
  
   def test_exp_time_conversion
@@ -130,7 +130,7 @@ class CommandExecutorTest < Test::Unit::TestCase
     result = @executor.split_arguments(command)
 
     assert_false result.success
-    assert_equal 'Bytes specified are not valid', result.error_message
+    assert_equal 'CLIENT_ERROR Bytes specified are not valid.', result.error_message
   end
 
   def test_negative_bytes
@@ -138,7 +138,7 @@ class CommandExecutorTest < Test::Unit::TestCase
     result = @executor.split_arguments(command)
 
     assert_false result.success
-    assert_equal 'Bytes specified are not valid', result.error_message
+    assert_equal 'CLIENT_ERROR Bytes specified are not valid.', result.error_message
   end
 
   def test_non_numerical_cas_unique
@@ -146,7 +146,7 @@ class CommandExecutorTest < Test::Unit::TestCase
     result = @executor.split_arguments(command)
     
     assert_false result.success
-    assert_equal 'Cas value is not valid', result.error_message
+    assert_equal 'CLIENT_ERROR Cas value is not valid.', result.error_message
   end
 
   def test_negative_cas_unique
@@ -154,7 +154,7 @@ class CommandExecutorTest < Test::Unit::TestCase
     result = @executor.split_arguments(command)
     
     assert_false result.success
-    assert_equal 'Cas value is not valid', result.error_message
+    assert_equal 'CLIENT_ERROR Cas value is not valid.', result.error_message
   end
 
   def test_invalid_noreply
@@ -179,7 +179,7 @@ class CommandExecutorTest < Test::Unit::TestCase
     result = @executor.split_arguments(command)
 
     assert_false result.success
-    assert_equal 'Invalid number of arguments', result.error_message
+    assert_equal 'CLIENT_ERROR Invalid number of arguments.', result.error_message
   end
 
   def test_execute_set_correctly
@@ -341,6 +341,8 @@ class CommandExecutorTest < Test::Unit::TestCase
     parsed_result = @executor.split_arguments(command)
     message = @executor.execute_retrieval(parsed_result.command_args)
     expected_message = "END"
+
+    assert_equal expected_message, message
   end
 
 end

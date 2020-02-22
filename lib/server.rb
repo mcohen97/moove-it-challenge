@@ -14,6 +14,7 @@ class Server
 
   def listen_to_requests()
     listener = TCPServer.new('localhost', @port)
+    @cache.start_purge
     handler = ConnectionHandler.new(@cache)
     worker_pool = Concurrent::FixedThreadPool.new(5)
     

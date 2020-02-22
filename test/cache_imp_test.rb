@@ -26,16 +26,27 @@ class CommandExecutorTest < Test::Unit::TestCase
   end
 
   def test_add_already_existing
-    @cache.set('Key','Data', 0, 60)
-    result = @cache.add('Key','Data', 0, 60)
+    @cache.set('Key','Data', 3, 60)
+    result = @cache.add('Key','Data', 4, 60)
     fetched = @cache.get(['Key']).entries[0]
 
     assert_false result.success
     assert_equal 'NOT_STORED', result.message
+    assert_equal 3, fetched.flags
+  end
+
+  def test_add_already_existing_expired_key
+    @cache.set('Key','Data', 0, -1)
+    result = @cache.add('Key','Data', 0, 60)
+    fetched = @cache.get(['Key']).entries[0]
+
+    assert_true result.success
+    assert_equal 'STORED', result.message
+    assert_equal 'Data', fetched.data
   end
 
   def test_replace_existing
-    result = @cache.add('Key','Data1', 0, 60)
+    @cache.add('Key','Data1', 0, 60)
     result = @cache.replace('Key','Data2', 0, 60)
     fetched = @cache.get(['Key']).entries[0]
 
@@ -50,6 +61,16 @@ class CommandExecutorTest < Test::Unit::TestCase
 
     assert_false result.success
     assert_equal 'NOT_STORED', result.message
+  end
+
+  def test_replace_existing_expired
+    @cache.add('Key','Data1', 0, -1)
+    result = @cache.replace('Key','Data2', 0, 60)
+    fetched = @cache.get(['Key']).entries
+
+    assert_false result.success
+    assert_equal 'NOT_STORED', result.message
+    assert_false fetched.any?()
   end
 
   def test_get_non_existing

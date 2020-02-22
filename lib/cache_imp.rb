@@ -4,9 +4,19 @@ require_relative './cache_retrieval_result.rb'
 
 class CacheImp
 
+  PURGING_INTERVAL_SECS = 5
+
   def initialize
     @hash_storage = {}
     @cas_current = 2**32
+    @purging = false
+  end
+
+  def start_purge
+    if !@purging
+      @purging = true
+      Thread.new{check_and_remove_exipired_entries}
+    end
   end
 
   def set(key, data, flags, exp_time)
@@ -17,7 +27,7 @@ class CacheImp
   end
 
   def add(key, data, flags, exp_time)
-    if !@hash_storage.key?(key)
+    if !exists_entry?(key)
       set(key, data, flags, exp_time)
     else
       return CacheStorageResult.new(success: false, message: 'NOT_STORED')
@@ -25,7 +35,7 @@ class CacheImp
   end
 
   def replace(key, data, flags, exp_time)
-    if !@hash_storage.key?(key)
+    if !exists_entry?(key)
       return CacheStorageResult.new(success: false, message: 'NOT_STORED')
     else
       set(key, data, flags, exp_time)
@@ -33,7 +43,7 @@ class CacheImp
   end
 
   def append(key, data, flags, exp_time)
-    if !@hash_storage.key?(key)
+    if !exists_entry?(key)
       return CacheStorageResult.new(success: false, message: 'NOT_STORED')
     else
       current_entry = @hash_storage[key]
@@ -42,7 +52,7 @@ class CacheImp
   end
 
   def prepend(key, data, flags, exp_time)
-    if !@hash_storage.key?(key)
+    if !exists_entry?(key)
       return CacheStorageResult.new(success: false, message: 'NOT_STORED')
     else
       current_entry = @hash_storage[key]
@@ -51,7 +61,7 @@ class CacheImp
   end
 
   def cas(key, data, flags, exp_time, cas_unique)
-    if !@hash_storage.key?(key)
+    if !exists_entry?(key)
       return CacheStorageResult.new(success: false, message: 'NOT_FOUND')
     elsif @hash_storage[key].cas_unique != cas_unique
       return CacheStorageResult.new(success: false, message: 'EXISTS')
@@ -91,8 +101,29 @@ private
     return !entry.exp_date.nil? && entry.exp_date <= Time.now
   end
 
+  def exists_entry?(key)
+    return @hash_storage.key?(key) && (@hash_storage[key].exp_date.nil? || @hash_storage[key].exp_date > Time.now)
+  end
+
   def remove_entry(key)
     @hash_storage.delete(key)
   end
+
+  def check_and_remove_exipired_entries
+    while @purging
+      sleep(PURGING_INTERVAL_SECS)
+      perform_inspection()
+    end
+  end
+
+  def perform_inspection()
+    @hash_storage.each do |key, entry|
+      if expired?(entry)
+        remove_entry(key)
+        puts "Removing #{key}, #{entry}"
+      end
+    end
+  end
+
 end
 
