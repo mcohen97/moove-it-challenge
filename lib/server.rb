@@ -4,6 +4,8 @@ require_relative 'connection_handler.rb'
 
 class Server
 
+  MAX_THREADS = 10
+
   def initialize(cache, port)
     @cache = cache
     @port = port
@@ -16,7 +18,7 @@ class Server
     listener = TCPServer.new('localhost', @port)
     @cache.start_purge
     handler = ConnectionHandler.new(@cache)
-    worker_pool = Concurrent::FixedThreadPool.new(5)
+    worker_pool = Concurrent::FixedThreadPool.new(10)
     
     puts 'LISTENING TO REQUESTS...' 
     
@@ -33,6 +35,7 @@ class Server
   end
 
   def remove_connection(socket)
+    puts 'REMOVING SOCKET'
     socket.close
     @connections.delete(socket)
   end

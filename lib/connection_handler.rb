@@ -14,6 +14,7 @@ class ConnectionHandler
       socket.puts(response)
       puts 'WAITING FOR NEXT MESSAGE'
     end
+    closing_callback(socket)
   end
 
 private
