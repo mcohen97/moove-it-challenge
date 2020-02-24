@@ -14,6 +14,12 @@ class Server
     puts 'SERVER RUNNING'
   end
 
+  trap "SIGINT" do
+    puts 'Closing all connections'
+    close_all_connections()
+    exit 130
+  end
+
   def listen_to_requests()
     listener = TCPServer.new('localhost', @port)
     @cache.start_purge
