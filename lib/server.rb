@@ -29,15 +29,24 @@ class Server
     puts 'LISTENING TO REQUESTS...' 
     
     while @server_running
-      new_connection = listener.accept
-
-      worker_pool.post do
-        handler.handle_client(new_connection, method(:remove_connection))
+      begin
+        accept_next_connection(listener, worker_pool, handler)
+      rescue Errno=> e
+        # couln't connect with a client, continue.
+        next
       end
-
-      @connections << new_connection
-      puts @connections.length
     end
+  end
+
+  def accept_next_connection(listener, worker_pool, handler)
+    new_connection = listener.accept
+
+    worker_pool.post do
+      handler.handle_client(new_connection, method(:remove_connection))
+    end
+
+    @connections << new_connection
+    puts @connections.length
   end
 
   def remove_connection(socket)
