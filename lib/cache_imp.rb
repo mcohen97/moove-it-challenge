@@ -6,7 +6,7 @@ require 'concurrent-ruby'
 
 class CacheImp
 
-  PURGING_INTERVAL_SECS = 5
+  PURGING_INTERVAL_SECS = ENV["KEYS_PURGE_INTERVAL"] || 5
 
   def initialize
     @hash_storage = Concurrent::Hash.new()

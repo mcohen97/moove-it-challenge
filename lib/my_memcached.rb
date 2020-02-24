@@ -1,6 +1,9 @@
 require_relative 'cache_imp.rb'
 require_relative 'server.rb'
 
+require 'dotenv'
+Dotenv.load
+
 class MyMemcached
 
   def initialize(args)
@@ -14,6 +17,7 @@ class MyMemcached
 
 end
 
-my_cache = MyMemcached.new(port: 5001)
+port = ENV["PORT"].is_a?(Integer) ? ENV["PORT"] : 5000
+my_cache = MyMemcached.new(port: port)
 my_cache.run()
 
