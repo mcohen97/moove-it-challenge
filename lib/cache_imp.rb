@@ -3,10 +3,12 @@ require_relative './cache_storage_result.rb'
 require_relative './cache_retrieval_result.rb'
 
 require 'concurrent-ruby'
+require 'dotenv'
+Dotenv.load
 
 class CacheImp
 
-  PURGING_INTERVAL_SECS = ENV["KEYS_PURGE_INTERVAL"] || 5
+  PURGING_INTERVAL_SECS = ENV["KEYS_PURGE_INTERVAL"].to_i || 5
 
   def initialize
     @hash_storage = Concurrent::Hash.new()

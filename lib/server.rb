@@ -4,7 +4,7 @@ require_relative 'connection_handler.rb'
 
 class Server
 
-  MAX_THREADS = ENV["THREAD_POOL_SIZE"] || 25
+  MAX_THREADS = ENV["THREAD_POOL_SIZE"].to_i || 25
 
   def initialize(cache, port)
     @cache = cache
@@ -24,7 +24,6 @@ class Server
     listener = TCPServer.new('localhost', @port)
     @cache.start_purge
     handler = ConnectionHandler.new(@cache)
-    puts "MAX THREADS #{MAX_THREADS}"
     worker_pool = Concurrent::FixedThreadPool.new(MAX_THREADS)
     
     puts 'LISTENING TO REQUESTS...' 

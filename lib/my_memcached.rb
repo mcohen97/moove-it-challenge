@@ -17,7 +17,7 @@ class MyMemcached
 
 end
 
-port = ENV["PORT"].is_a?(Integer) ? ENV["PORT"] : 5000
+port = ENV["PORT"].to_i || 5000
 my_cache = MyMemcached.new(port: port)
 my_cache.run()
 
