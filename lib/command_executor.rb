@@ -1,13 +1,13 @@
+# frozen_string_literal: true
+
 require_relative './command_parsing_result.rb'
 
 class CommandExecutor
-
-  STORAGE_COMMANDS = %w[set add replace append prepend cas]
-  RETRIEVAL_COMMANDS = %w[get gets]
+  STORAGE_COMMANDS = %w[set add replace append prepend cas].freeze
+  RETRIEVAL_COMMANDS = %w[get gets].freeze
 
   CLIENT_ERROR = 'CLIENT_ERROR'
   NON_EXISTENT_COMMAND_NAME = 'ERROR'
-
 
   def initialize(cache_storage)
     @cache = cache_storage
@@ -16,7 +16,7 @@ class CommandExecutor
   def split_arguments(command_line)
     tokens = command_line.split("\s")
     command = tokens[0]
-    
+
     if is_storage?(command)
       return generate_storage_args(tokens)
     elsif is_retrieval?(command)
@@ -49,7 +49,7 @@ class CommandExecutor
       return "#{NON_EXISTENT_COMMAND_NAME} Invalid command."
     end
 
-    return result.message
+    result.message
   end
 
   def execute_retrieval(command_args)
@@ -64,30 +64,29 @@ class CommandExecutor
     end
     result << 'END'
 
-    return result.string
-  end
-  
-  def is_storage?(command)
-    return STORAGE_COMMANDS.include?(command)
+    result.string
   end
 
-private
+  def is_storage?(command)
+    STORAGE_COMMANDS.include?(command)
+  end
+
+  private
 
   def is_retrieval?(command)
-    return RETRIEVAL_COMMANDS.include?(command)
+    RETRIEVAL_COMMANDS.include?(command)
   end
 
   def generate_storage_args(tokens)
-
-    if !valid_args_count?(tokens)
+    unless valid_args_count?(tokens)
       return CommandParsingResult.new(nil, true, "#{CLIENT_ERROR} Invalid number of arguments.")
     end
-    
+
     key = tokens[1]
     flags = tokens[2]
     exp_time = tokens[3]
     bytes = tokens[4]
-      
+
     if !valid_key?(key)
       return CommandParsingResult.new(nil, true, "#{CLIENT_ERROR} Key is not valid.")
     elsif !valid_flags?(flags)
@@ -101,39 +100,37 @@ private
     end
 
     noreply = contains_no_reply?(tokens)
-    
-    args = {command: tokens[0], key: key, flags: flags, exp_time: parse_exp_time(exp_time), bytes: Integer(bytes), noreply: noreply}
 
-    if is_cas?(tokens[0])
-      args[:cas_unique] = Integer(tokens[5])
-    end
+    args = { command: tokens[0], key: key, flags: flags, exp_time: parse_exp_time(exp_time), bytes: Integer(bytes), noreply: noreply }
 
-    return CommandParsingResult.new(args, false, nil)
+    args[:cas_unique] = Integer(tokens[5]) if is_cas?(tokens[0])
+
+    CommandParsingResult.new(args, false, nil)
   end
 
   def valid_args_count?(tokens)
     if tokens[0] == 'cas'
-      valid = 6 <= tokens.length && tokens.length <= 7
-    else 
-      #cas command has different args, so it has to be evaluated separately
-      valid = 5 <= tokens.length && tokens.length <= 6 
+      valid = tokens.length >= 6 && tokens.length <= 7
+    else
+      # cas command has different args, so it has to be evaluated separately
+      valid = tokens.length >= 5 && tokens.length <= 6
     end
-    return valid
+    valid
   end
 
   def is_cas?(command)
-    return command == 'cas'
+    command == 'cas'
   end
 
   def valid_cas_unique?(tokens)
-    return is_unsigned_int(tokens[5])
+    is_unsigned_int(tokens[5])
   end
 
   def contains_no_reply?(tokens)
     if tokens[0] == 'cas'
-      return tokens.length == 7 && tokens[6] == 'noreply'
+      tokens.length == 7 && tokens[6] == 'noreply'
     else
-      return tokens.length == 6 && tokens[5] == 'noreply'
+      tokens.length == 6 && tokens[5] == 'noreply'
     end
   end
 
@@ -141,28 +138,29 @@ private
     if tokens.length < 2
       return CommandParsingResult.new(nil, true, "#{CLIENT_ERROR} Invalid number of arguments.")
     end
-    args = {command: tokens[0], keys: tokens.drop(1)}
-    return CommandParsingResult.new(args, false, nil)
+
+    args = { command: tokens[0], keys: tokens.drop(1) }
+    CommandParsingResult.new(args, false, nil)
   end
 
   def valid_key?(key)
-    return key.length <= 250 && (key =~ /[^[:print:]]/).nil?
+    key.length <= 250 && (key =~ /[^[:print:]]/).nil?
   end
 
   def valid_flags?(flags)
-    return is_unsigned_int(flags)
+    is_unsigned_int(flags)
   end
 
   def valid_time?(exp_time)
-    return is_integer?(exp_time) 
+    is_integer?(exp_time)
   end
 
   def valid_bytes?(bytes)
-    return is_unsigned_int(bytes)
+    is_unsigned_int(bytes)
   end
 
   def is_unsigned_int(string)
-    return is_integer?(string) && Integer(string) >= 0 
+    is_integer?(string) && Integer(string) >= 0
   end
 
   def is_integer?(string)
@@ -171,11 +169,10 @@ private
 
   def parse_exp_time(time)
     seconds = Integer(time)
-    if seconds > 2592000
+    if seconds > 2_592_000
       secs_since_epoch = Time.now.to_i
       return seconds - secs_since_epoch
     end
-    return seconds
+    seconds
   end
-
 end

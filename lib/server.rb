@@ -1,10 +1,11 @@
+# frozen_string_literal: true
+
 require 'socket'
 require 'concurrent-ruby'
 require_relative 'connection_handler.rb'
 
 class Server
-
-  MAX_THREADS = ENV["THREAD_POOL_SIZE"].to_i || 25
+  MAX_THREADS = ENV['THREAD_POOL_SIZE'].to_i || 25
 
   def initialize(cache, port)
     @cache = cache
@@ -14,24 +15,24 @@ class Server
     puts 'SERVER RUNNING'
   end
 
-  trap "SIGINT" do
+  trap 'SIGINT' do
     puts 'Closing all connections'
-    close_all_connections()
+    close_all_connections
     exit 130
   end
 
-  def listen_to_requests()
+  def listen_to_requests
     listener = TCPServer.new('localhost', @port)
     @cache.start_purge
     handler = ConnectionHandler.new(@cache)
     worker_pool = Concurrent::FixedThreadPool.new(MAX_THREADS)
-    
-    puts 'LISTENING TO REQUESTS...' 
-    
+
+    puts 'LISTENING TO REQUESTS...'
+
     while @server_running
       begin
         accept_next_connection(listener, worker_pool, handler)
-      rescue Errno=> e
+      rescue Errno => e
         # couln't connect with a client, continue.
         next
       end
@@ -55,11 +56,8 @@ class Server
     @connections.delete(socket)
   end
 
-  def close_all_connections()
-    @connections.each do |c|
-      c.close
-    end
+  def close_all_connections
+    @connections.each(&:close)
     @connections.clear
   end
-
 end

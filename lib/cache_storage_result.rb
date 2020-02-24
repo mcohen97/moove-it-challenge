@@ -1,5 +1,6 @@
-class CacheStorageResult
+# frozen_string_literal: true
 
+class CacheStorageResult
   attr_reader :success, :message, :entry
 
   def initialize(args)
@@ -7,5 +8,4 @@ class CacheStorageResult
     @message = args[:message]
     @entry = args[:entry]
   end
-
 end
