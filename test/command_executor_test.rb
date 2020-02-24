@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require 'test/unit'
-require_relative '../lib/command_executor.rb'
-require_relative '../lib/cache_imp.rb'
+require_relative '../lib/server/command_executor.rb'
+require_relative '../lib/server/cache_imp.rb'
 
 class CommandExecutorTest < Test::Unit::TestCase
   def setup

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative './command_parsing_result.rb'
+require_relative './dtos/command_parsing_result.rb'
 
 class CommandExecutor
   STORAGE_COMMANDS = %w[set add replace append prepend cas].freeze

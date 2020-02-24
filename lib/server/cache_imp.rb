@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require_relative './cache_entry.rb'
-require_relative './cache_storage_result.rb'
-require_relative './cache_retrieval_result.rb'
+require_relative './dtos/cache_storage_result.rb'
+require_relative './dtos/cache_retrieval_result.rb'
 
 require 'concurrent-ruby'
 require 'dotenv'
