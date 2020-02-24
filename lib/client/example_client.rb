@@ -24,9 +24,9 @@ message = gets
 while message != 'X'
   streamSock.print(message)
   server_message = if message.start_with?('get')
-                     get_multi_line(streamSock)
-                   else
-                     streamSock.gets
+                    get_multi_line(streamSock)
+                   elsif !message.chomp.split('\r\n')[0].end_with?('noreply')
+                    streamSock.gets                     
                    end
   puts '----------------------------------------'
   print server_message

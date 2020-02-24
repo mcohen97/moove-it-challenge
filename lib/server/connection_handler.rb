@@ -12,7 +12,7 @@ class ConnectionHandler
     while line = socket.gets
       response = process_line(socket, line)
       puts "RESPONSE: #{response}"
-      socket.puts(response)
+      socket.puts(response) if !response.nil?
       puts 'WAITING FOR NEXT MESSAGE'
     end
     closing_callback.call(socket)
@@ -29,14 +29,16 @@ class ConnectionHandler
     return parsed_command.error_message unless parsed_command.success
 
     command_args = parsed_command.command_args
+    puts command_args.inspect
     if @executor.is_storage?(command_args[:command])
       data = if command_data.length >= 2
                command_data[1]
              else
-               # socket.puts('SEND DATA')
+               socket.puts('SEND DATA')
                get_data(socket, command_args[:bytes])
              end
-      return @executor.execute_storage(command_args, data)
+      result = @executor.execute_storage(command_args, data)
+      return command_args[:noreply]? nil : result
     end
     @executor.execute_retrieval(command_args)
   end
