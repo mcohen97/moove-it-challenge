@@ -15,6 +15,8 @@ class ConnectionHandler
       puts 'WAITING FOR NEXT MESSAGE'
     end
     closing_callback.call(socket)
+  rescue Errno, StandardError => e
+    closing_callback.call(socket)
   end
 
 private
