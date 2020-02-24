@@ -213,7 +213,7 @@ class CommandExecutorTest < Test::Unit::TestCase
   def test_execute_replace_correctly
     @cache.set('Key1','Data1', 0, 0)
 
-    command = 'replace Key1 0 0 4'
+    command = 'replace Key1 0 0 5'
     parsed_result = @executor.split_arguments(command)
     message = @executor.execute_storage(parsed_result.command_args, 'Data2')
 
@@ -221,7 +221,7 @@ class CommandExecutorTest < Test::Unit::TestCase
   end
 
   def test_execute_replace_non_existing
-    command = 'replace key 0 0 4'
+    command = 'replace key 0 0 5'
     parsed_result = @executor.split_arguments(command)
     message = @executor.execute_storage(parsed_result.command_args, 'Data2')
 
@@ -231,7 +231,7 @@ class CommandExecutorTest < Test::Unit::TestCase
   def test_execute_append_correctly
     @cache.set('Key1','Data1', 0, 0)
 
-    command = 'append Key1 0 0 4'
+    command = 'append Key1 0 0 5'
     parsed_result = @executor.split_arguments(command)
     message = @executor.execute_storage(parsed_result.command_args, 'Data2')
 
@@ -239,7 +239,7 @@ class CommandExecutorTest < Test::Unit::TestCase
   end
 
   def test_execute_append_to_non_existing
-    command = 'append key 0 0 4'
+    command = 'append key 0 0 5'
     parsed_result = @executor.split_arguments(command)
     message = @executor.execute_storage(parsed_result.command_args, 'Data2')
 
@@ -249,7 +249,7 @@ class CommandExecutorTest < Test::Unit::TestCase
   def test_execute_prepend_correctly
     @cache.set('Key1','Data1', 0, 0)
 
-    command = 'prepend Key1 0 0 4'
+    command = 'prepend Key1 0 0 5'
     parsed_result = @executor.split_arguments(command)
     message = @executor.execute_storage(parsed_result.command_args, 'Data2')
 
@@ -257,7 +257,7 @@ class CommandExecutorTest < Test::Unit::TestCase
   end
 
   def test_execute_prepend_to_non_existing
-    command = 'prepend key 0 0 4'
+    command = 'prepend key 0 0 5'
     parsed_result = @executor.split_arguments(command)
     message = @executor.execute_storage(parsed_result.command_args, 'Data2')
 
@@ -268,7 +268,7 @@ class CommandExecutorTest < Test::Unit::TestCase
     result = @cache.set('Key1','Data1', 0, 0)
     cas = result.entry.cas_unique
 
-    command = "cas Key1 0 0 4 #{cas}" #2^32 is known to be the first cas unique generated
+    command = "cas Key1 0 0 5 #{cas}" #2^32 is known to be the first cas unique generated
     parsed_result = @executor.split_arguments(command)
     message = @executor.execute_storage(parsed_result.command_args, 'Data2')
 
@@ -281,7 +281,7 @@ class CommandExecutorTest < Test::Unit::TestCase
     @cache.set('Key1','Data1', 0, 0)
 
 
-    command = "cas Key1 0 0 4 #{old_cas}" # current cas is 1 more, since it's been updated
+    command = "cas Key1 0 0 5 #{old_cas}" # current cas is 1 more, since it's been updated
     parsed_result = @executor.split_arguments(command)
     message = @executor.execute_storage(parsed_result.command_args, 'Data2')
 
@@ -289,7 +289,7 @@ class CommandExecutorTest < Test::Unit::TestCase
   end
 
   def test_execute_cas_non_existing
-    command = "cas key 0 0 4 15" 
+    command = "cas key 0 0 5 15" 
     parsed_result = @executor.split_arguments(command)
     message = @executor.execute_storage(parsed_result.command_args, 'Data2')
 
