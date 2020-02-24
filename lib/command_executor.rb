@@ -27,8 +27,11 @@ class CommandExecutor
   end
 
   def execute_storage(command_args, data)
-    command = command_args[:command]
+    if data.length != command_args[:bytes]
+      return "#{CLIENT_ERROR} Bad data chunk."
+    end
 
+    command = command_args[:command]
     case command
     when 'set'
       result = @cache.set(command_args[:key], data, command_args[:flags], command_args[:exp_time])
