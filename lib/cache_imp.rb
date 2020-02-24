@@ -2,12 +2,14 @@ require_relative './cache_entry.rb'
 require_relative './cache_storage_result.rb'
 require_relative './cache_retrieval_result.rb'
 
+require 'concurrent-ruby'
+
 class CacheImp
 
   PURGING_INTERVAL_SECS = 5
 
   def initialize
-    @hash_storage = Concurrent::Hash.new({})
+    @hash_storage = Concurrent::Hash.new()
     @cas_current = 2**32
     @purging = false
   end
