@@ -73,11 +73,6 @@ To run the unit tests, run the following command in the root directory.
 ruby -Itest test/all_tests.rb
 ```
 
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
 ## Built With
 
 * [Ruby](https://www.ruby-lang.org/en/documentation/) - The programming language used.
