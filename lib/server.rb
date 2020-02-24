@@ -18,7 +18,7 @@ class Server
     listener = TCPServer.new('localhost', @port)
     @cache.start_purge
     handler = ConnectionHandler.new(@cache)
-    worker_pool = Concurrent::FixedThreadPool.new(10)
+    worker_pool = Concurrent::FixedThreadPool.new(MAX_THREADS)
     
     puts 'LISTENING TO REQUESTS...' 
     
