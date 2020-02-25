@@ -73,7 +73,7 @@ PORT=
 And run the client:
 
 ```
-ruby lib/example_client.rb
+ruby lib/demo_client.rb
 ```
 
 You should get an output similar to this:

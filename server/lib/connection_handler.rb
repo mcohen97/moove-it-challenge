@@ -10,7 +10,7 @@ class ConnectionHandler
   def handle_client(socket, closing_callback)
     while line = socket.gets
       response = process_line(socket, line)
-      socket.puts(response) if !response.nil?
+      socket.puts(response) unless response.nil?
     end
     closing_callback.call(socket)
   rescue Errno, StandardError => e
@@ -33,7 +33,7 @@ class ConnectionHandler
                get_data(socket, command_args[:bytes])
              end
       result = @executor.execute_storage(command_args, data)
-      return command_args[:noreply]? nil : result
+      return command_args[:noreply] ? nil : result
     end
     @executor.execute_retrieval(command_args)
   end

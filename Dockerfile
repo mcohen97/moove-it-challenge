@@ -6,4 +6,4 @@ COPY /server /application
 RUN gem install bundler -v 2.0.2 && bundle install 
 EXPOSE 5000
 
-CMD ruby lib/server/my_memcached.rb
+CMD ruby lib/my_memcached.rb
