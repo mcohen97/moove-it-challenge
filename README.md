@@ -4,7 +4,7 @@ This is an implementation of Memcached cache server, built in Ruby.
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
 
@@ -164,7 +164,7 @@ gets key1 key2
 
 ## Running the tests
 
-To run the unit tests, run the following command in the root directory.
+To run the unit tests, run the following command in the server directory.
 
 ```
 ruby -Itest test/all_tests.rb
