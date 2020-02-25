@@ -48,10 +48,10 @@ KEYS_PURGE_INTERVAL = ...
 
 4. Now you are ready to run the project.
 
--To start the server, run the following script in the root folder:
+-To start the server, run the following script in the server folder:
 
 ```
-ruby lib/server/my_memcached.rb
+ruby lib/my_memcached.rb
 ```
 
 You should get an output similar to this:
@@ -61,10 +61,10 @@ SERVER RUNNING
 LISTENING TO REQUESTS...
 ```
 
--You can access the server with the demo client provided
+-You can access the server with the demo client provided (client folder)
 
 ```
-ruby lib/client/example_client.rb
+ruby example_client.rb
 ```
 
 You should get an output similar to this:

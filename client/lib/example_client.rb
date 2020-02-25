@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'socket'
+require 'dotenv'
 
 def get_multi_line(socket)
   total_message = StringIO.new
@@ -14,9 +15,12 @@ def get_multi_line(socket)
   total_message.string
 end
 
+Dotenv.load
 prompt_message = 'TYPE COMMAND (X to exit)'
 
-streamSock = TCPSocket.new('127.0.0.1', 5005)
+ip = ENV["IP_ADDRESS"]
+port = ENV["PORT"]
+streamSock = TCPSocket.new(ip, port)
 
 puts prompt_message
 
@@ -24,9 +28,9 @@ message = gets
 while message != 'X'
   streamSock.print(message)
   server_message = if message.start_with?('get')
-                    get_multi_line(streamSock)
+                     get_multi_line(streamSock)
                    elsif !message.chomp.split('\r\n')[0].end_with?('noreply')
-                    streamSock.gets                     
+                     streamSock.gets
                    end
   puts '----------------------------------------'
   print server_message

@@ -47,11 +47,9 @@ class Server
     end
 
     @connections << new_connection
-    puts @connections.length
   end
 
   def remove_connection(socket)
-    puts 'REMOVING SOCKET'
     socket.close
     @connections.delete(socket)
   end

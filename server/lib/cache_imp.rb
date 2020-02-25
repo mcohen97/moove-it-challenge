@@ -10,6 +10,7 @@ Dotenv.load
 
 class CacheImp
   PURGING_INTERVAL_SECS = ENV['KEYS_PURGE_INTERVAL'].to_i || 5
+  MESSAGES = { stored: 'STORED', not_stored: 'NOT_STORED', exists: 'EXISTS', not_found: 'NOT_FOUND' }.freeze
 
   def initialize
     @hash_storage = Concurrent::Hash.new
@@ -28,20 +29,20 @@ class CacheImp
     cas_unique = next_cas_val
     entry = CacheEntry.new(key: key, data: data, flags: flags, exp_time: exp_time, cas_unique: cas_unique)
     @hash_storage[key] = entry
-    CacheStorageResult.new(success: true, message: 'STORED', entry: entry)
+    CacheStorageResult.new(success: true, message: MESSAGES[:stored], entry: entry)
   end
 
   def add(key, data, flags, exp_time)
     if !exists_entry?(key)
       set(key, data, flags, exp_time)
     else
-      CacheStorageResult.new(success: false, message: 'NOT_STORED')
+      CacheStorageResult.new(success: false, message: MESSAGES[:not_stored])
     end
   end
 
   def replace(key, data, flags, exp_time)
     if !exists_entry?(key)
-      CacheStorageResult.new(success: false, message: 'NOT_STORED')
+      CacheStorageResult.new(success: false, message: MESSAGES[:not_stored])
     else
       set(key, data, flags, exp_time)
     end
@@ -49,7 +50,7 @@ class CacheImp
 
   def append(key, data, flags, exp_time)
     if !exists_entry?(key)
-      CacheStorageResult.new(success: false, message: 'NOT_STORED')
+      CacheStorageResult.new(success: false, message: MESSAGES[:not_stored])
     else
       current_entry = @hash_storage[key]
       set(key, current_entry.data + data, flags, exp_time)
@@ -58,7 +59,7 @@ class CacheImp
 
   def prepend(key, data, flags, exp_time)
     if !exists_entry?(key)
-      CacheStorageResult.new(success: false, message: 'NOT_STORED')
+      CacheStorageResult.new(success: false, message: MESSAGES[:not_stored])
     else
       current_entry = @hash_storage[key]
       set(key, data + current_entry.data, flags, exp_time)
@@ -67,9 +68,9 @@ class CacheImp
 
   def cas(key, data, flags, exp_time, cas_unique)
     if !exists_entry?(key)
-      CacheStorageResult.new(success: false, message: 'NOT_FOUND')
+      CacheStorageResult.new(success: false, message: MESSAGES[:not_found])
     elsif @hash_storage[key].cas_unique != cas_unique
-      CacheStorageResult.new(success: false, message: 'EXISTS')
+      CacheStorageResult.new(success: false, message: MESSAGES[:exists])
     else
       set(key, data, flags, exp_time)
     end
