@@ -32,13 +32,13 @@ gem install bundler
 
 2. Install the project's dependencies.
 
-In the root directory open the terminal and execute the following command:
+In the server and client directories open the terminal and execute the following command in each one:
 
 ```
 bundle install
 ```
 
-3. Edit the .env file in the root folder, and configure the environment variables: Port number, thread pool size and length of purge interval.
+3. Edit the .env file in the server folder, and configure the environment variables: Port number, thread pool size and length of purge interval.
 
 ```
 PORT = ...
@@ -63,8 +63,17 @@ LISTENING TO REQUESTS...
 
 -You can access the server with the demo client provided (client folder)
 
+First, you need to edit the .env file in the client directory. Set the port and IP address where the server is running:
+
 ```
-ruby example_client.rb
+IP_ADDRESS= 
+PORT=
+```
+
+And run the client:
+
+```
+ruby lib/example_client.rb
 ```
 
 You should get an output similar to this:
