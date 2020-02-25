@@ -95,7 +95,7 @@ Here is a list of the available commands, and samples for the demo client.
 
 -set
 
-set -key- -flags- -exptime- -bytes- [noreply]\r\n
+set < key> < flags> < exptime> < bytes> [noreply]\r\n
 
 ```
 set key1 4 60 5\r\ndata1\r\n
@@ -103,7 +103,7 @@ set key1 4 60 5\r\ndata1\r\n
 
 -add
 
-add -key- -flags- -exptime- -bytes- [noreply]\r\n
+add < key> < flags> < exptime> < bytes> [noreply]\r\n
 
 ```
 add key2 4 60 5\r\ndata2\r\n
@@ -111,7 +111,7 @@ add key2 4 60 5\r\ndata2\r\n
 
 -replace
 
-replace -key- -flags- -exptime- -bytes- [noreply]\r\n
+replace < key> < flags> < exptime> < bytes> [noreply]\r\n
 
 ```
 replace key2 4 60 5\r\ndata3\r\n
@@ -119,7 +119,7 @@ replace key2 4 60 5\r\ndata3\r\n
 
 -append
 
-append -key- -flags- -exptime- -bytes- [noreply]\r\n
+append < key> < flags> < exptime> < bytes> [noreply]\r\n
 
 ```
 append key1 4 60 5\r\ndata1\r\n
@@ -127,7 +127,7 @@ append key1 4 60 5\r\ndata1\r\n
 
 -prepend
 
-prepend -key- -flags- -exptime- -bytes- [noreply]\r\n
+prepend < key> < flags> < exptime> < bytes> [noreply]\r\n
 
 ```
 prepend key2 7 60 5\r\ndata2\r\n
@@ -135,7 +135,7 @@ prepend key2 7 60 5\r\ndata2\r\n
 
 -cas
 
-cas -key- -flags- -exptime- -bytes- -cas unique- [noreply]\r\n
+cas < key> < flags> < exptime> < bytes> < cas unique> [noreply]\r\n
 
 ```
 cas key2 3 60 5 1\r\ndata2\r\n
@@ -144,11 +144,11 @@ cas key2 3 60 5 1\r\ndata2\r\n
 
 #### Retrieval commands
 
-- <key>* means one or more key strings separated by whitespace.
+- < key>* means one or more key strings separated by whitespace.
 
 -get
 
-get <key>*
+get < key>*
 
 ```
 get key1 key2
@@ -156,7 +156,7 @@ get key1 key2
 
 -gets
 
-gets <key>*
+gets < key>*
 
 ```
 gets key1 key2
