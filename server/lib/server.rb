@@ -5,7 +5,7 @@ require 'concurrent-ruby'
 require_relative 'connection_handler.rb'
 
 class Server
-  MAX_THREADS = ENV['THREAD_POOL_SIZE'].to_i || 25
+  MAX_THREADS = ENV['THREAD_POOL_SIZE'].to_i.zero? ? 20 : ENV['THREAD_POOL_SIZE'].to_i
 
   def initialize(cache, port)
     @cache = cache

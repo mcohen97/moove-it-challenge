@@ -18,8 +18,8 @@ end
 Dotenv.load
 prompt_message = 'TYPE COMMAND (X to exit)'
 
-ip = ENV["IP_ADDRESS"]
-port = ENV["PORT"]
+ip = ENV["IP_ADDRESS"].to_s.empty? ? '127.0.0.1' : ENV["IP_ADDRESS"].to_s
+port = ENV["PORT"].to_i.zero? ? 5000 : ENV["PORT"].to_i
 streamSock = TCPSocket.new(ip, port)
 
 puts prompt_message

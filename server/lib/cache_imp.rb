@@ -9,7 +9,7 @@ require 'dotenv'
 Dotenv.load
 
 class CacheImp
-  PURGING_INTERVAL_SECS = ENV['KEYS_PURGE_INTERVAL'].to_i || 5
+  PURGING_INTERVAL_SECS = ENV['KEYS_PURGE_INTERVAL'].to_i.zero? ? 5 : ENV['KEYS_PURGE_INTERVAL'].to_i
   MESSAGES = { stored: 'STORED', not_stored: 'NOT_STORED', exists: 'EXISTS', not_found: 'NOT_FOUND' }.freeze
 
   def initialize
