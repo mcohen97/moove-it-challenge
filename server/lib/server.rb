@@ -12,7 +12,7 @@ class Server
     @port = port
     @server_running = true
     @connections = []
-    puts 'SERVER RUNNING'
+    puts "SERVER RUNNING IN PORT #{port}"
   end
 
   trap 'SIGINT' do
